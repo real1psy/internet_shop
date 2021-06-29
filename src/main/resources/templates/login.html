@@ -1,0 +1,55 @@
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/header.html">
+<div layout:fragment="site_content" >
+
+    <div class="row">
+        <div class="col-6 offset-3">
+            <form th:action="@{'/auth'}" method="post">
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Email: </label>
+                    <input type="email" name="email" class="form-control" id="exampleInputEmail1" onkeyup='saveValue(this);' aria-describedby="emailHelp" required>
+                    <small id="emailHelp" class="form-text text-muted" th:text="#{label.emailHelp}"></small>
+                </div>
+                <div class="form-group">
+                    <label th:text="#{label.password}"></label>
+                    <input type="password" name="password" class="form-control" id="passwordInput2" required>
+                </div>
+                <div class="form-group float-right mt-2">
+                    <input class="mr-1" type="checkbox" onclick="myFunction()" th:text="#{label.show}">
+                </div>
+                <button type="submit" class="btn btn-primary mb-3" th:text="#{button.signIn}"></button>
+                <p ><span th:text="#{label.notReg}"></span><a th:href="@{'/registration'}" th:text="#{link.linkToReg}"></a></p>
+            </form>
+            <script>
+                function myFunction() {
+                    var x = document.getElementById("passwordInput2");
+                    if (x.type === "password") {
+                        x.type = "text";
+                    } else {
+                        x.type = "password";
+                    }
+                }
+
+                document.getElementById("exampleInputEmail1").value = getSavedValue("exampleInputEmail1");
+
+                function saveValue(e){
+                    var id = e.id;
+                    var val = e.value;
+                    localStorage.setItem(id, val);
+                }
+
+                function getSavedValue  (v){
+                    if (!localStorage.getItem(v)) {
+                        return "";
+                    }
+                    return localStorage.getItem(v);
+                }
+            </script>
+
+        </div>
+    </div>
+
+
+</div>
+
+</html>

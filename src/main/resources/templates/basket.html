@@ -1,0 +1,101 @@
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/header.html" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div layout:fragment="site_content" >
+
+    <form class="form-inline " th:action="@{'/detailedSearch'}" method="get">
+        <input class="form-control w-75" type="search" name="search" placeholder="Search" aria-label="Search">
+        <button class="btn  ml-2" style="width: 195px; background-color: seagreen; color: white;" type="submit" th:text="#{button.search}"></button>
+    </form>
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4 th:text="#{link.basket}"></h4>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col" th:text="#{label.name}"></th>
+                    <th scope="col" th:text="#{label.price}"></th>
+                    <th scope="col" th:text="#{label.count}"></th>
+                    <th scope="col" width="8%"></th>
+                    <th scope="col" width="8%"></th>
+                </tr>
+                </thead>
+                <tbody th:each="bas:${basket}">
+                    <tr>
+                        <th scope="row" th:text="${bas.item.name}"></th>
+                        <td th:text="${bas.item.price}+' $'"></td>
+                        <td th:text="${bas.count}"></td>
+                        <td>
+                            <form  th:action="@{'/decreaseCountOfItem'}" th:method="post">
+                                <input type="hidden" name="id" th:value="${bas.item.id}">
+                                <button class="btn btn-danger btn-sm" type="submit"><span class="material-icons pt-1" style="font-size: 18px;" >remove</span></button>
+                            </form>
+                        </td>
+                        <td>
+                            <form th:action="@{'/addCountToItem'}" th:method="post">
+                                <input type="hidden" name="id" th:value="${bas.item.id}">
+                                <button class="btn btn-success btn-sm" type="submit"><span class="material-icons pt-1" style="font-size: 18px;" >add</span></button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="mt-5 float-left" th:if="${totalAmount!=null}"><span th:text="#{label.total}+${totalAmount}+' $'"> </span> </div>
+            <div class="mt-5 float-right" th:if="${basket!=null}" >
+                <form class="float-right ml-1 mr-1" th:action="@{'/clearBasket'}" th:method="post" th:if="${basket.size()>0}">
+                    <button class="btn btn-danger btn-sm  d-flex" type="submit">  <span class="material-icons" style="margin-right:5px;">remove_shopping_cart</span><b th:text="#{button.clear}"></b></button>
+                </form>
+                <button class="btn btn-secondary btn-sm p-1 float-right d-flex" type="button" data-toggle="modal" data-target="#checkIn" th:if="${basket.size()>0}" style="margin-left:5px;">  <span class="material-icons" style="margin-right:5px;">payment</span><b th:text="#{button.checkIn}"></b></button>
+            </div>
+            <form th:action="@{'/makePayment'}" method="post">
+                <div class="modal fade" id="checkIn" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" >
+                                <div class="form-group">
+                                    <label for="fname" th:text="#{label.fullName}"> </label>
+                                    <input type="text" class="form-control" id="fname" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="inputAddress2" th:text="#{label.card}"></label>
+                                    <input type="text" class="form-control" id="inputAddress2" required>
+                                </div>
+                                <p th:text="#{label.expiration}"></p>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-5">
+                                        <label for="mm" th:text="#{label.mm}"></label>
+                                        <input type="text" class="form-control" id="mm" maxlength="2" minlength="1" required >
+                                    </div>
+                                    <div class="form-group col-md-5">
+                                        <label for="yy" th:text="#{label.yy}"></label>
+                                        <input type="text" class="form-control" id="yy" maxlength="2" minlength="1" required>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label for="CVV" >CVV</label>
+                                        <input type="password" class="form-control" id="CVV" maxlength="3" minlength="3" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success" th:text="#{button.pay}"></button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{button.close}"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</html>

@@ -1,0 +1,138 @@
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/header.html" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div layout:fragment="site_content" >
+            <form class="form-inline " th:action="@{'/detailedSearch'}" method="get">
+                <input class="form-control w-75" type="search"  name="search" placeholder="Search" aria-label="Search">
+                <button class="btn  ml-2" style="width: 195px; background-color: seagreen; color: white;" type="submit" th:text="#{button.search}"></button>
+            </form>
+            <div class="card w-100 mt-4 mb-4" th:if="${item.id!=null}">
+                <img th:src="${item.largePicUrl}" class="card-img-top d-block w-75 mx-auto" alt="..." >
+                <div class="card-body">
+                    <h5 class="card-title" style="color:dodgerblue;"  th:text="${item.name}"></h5>
+                    <h6 class="card-text" th:text="${item.price}+' $'"> </h6>
+                    <p class="card-text" th:text="${item.description}"> </p>
+                    <p class="card-text" th:text="#{label.brand}+': '+${item.brand!=null&&item.brand.country!=null?item.brand.name+','+item.brand.country.name : ''}"> </p>
+
+                    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" th:if="${!pictures.isEmpty()}">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img th:src="@{'/viewItemPicture/'+${pictures.get(0).url}}" class="d-block w-50 mx-auto " >
+                            </div>
+                            <div class="carousel-item" th:if="${!pictures.isEmpty() && pictures.size()>1}" th:each="i: ${#numbers.sequence(1,pictures.size()-1)}">
+                                <img th:src="@{'/viewItemPicture/'+${pictures.get(i).url}}" class="d-block w-50 mx-auto" >
+                            </div>
+                        </div>
+                        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color:darkgrey;"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true" style="background-color:darkgrey;"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer" >
+                    <div th:each="i: ${#numbers.sequence(1, 5)}" style="float:left; color: #F6D765;">
+                        <span class="material-icons d-inline"  th:if="${i<=item.rating}">star</span>
+                        <span class="material-icons d-inline"  th:unless="${i<=item.rating}">star_border</span>
+                    </div>
+                </div>
+            </div>
+          <div  th:if="${item.count>0}">
+            <form class="mt-4" sec:authorize="isAuthenticated()" method="POST" th:action="@{'/addToBasket'}">
+                <input type="hidden" name="item_id_b" th:value="${item.id}">
+                <button class="btn btn-sm btn-success d-flex" type="submit">
+                    <span class="material-icons" style="margin-right:5px;">shopping_bag</span> <span class="" style="font-size: 14px; font-weight: bolder;" th:text="#{button.addToBasket}"></span>
+                </button>
+            </form>
+              <form class="mt-4" sec:authorize="isAnonymous()" method="POST" th:action="@{'/addToBasket'}">
+                  <input type="hidden" name="item_id_b" th:value="${item.id}">
+                  <button class="btn btn-sm btn-success d-flex" type="submit">
+                      <span class="material-icons " style="margin-right:5px;">shopping_bag</span> <span class="" style="font-size: 14px; font-weight: bolder;" th:text="#{button.addToBasket}"></span>
+                  </button>
+              </form>
+
+          </div>
+             <div th:if="${item.count==0}" th:text="#{label.countZero}">
+
+             </div>
+            <div class="mt-5" th:if="${!comments.isEmpty() || comments!=null}">
+                <div th:each="comment:${comments}">
+                    <div class="card">
+                        <div class="container mt-3">
+                            <h5 class="card-title float-left" th:text="${comment.author.fullName}"></h5>
+                            <p class="float-right" th:text="${comment.addedDate}" style="font-size: 11px; color:grey;"></p>
+                        </div>
+                        <div class="container mb-3" style="margin-top:0px;" >
+                            <p class="float-left" th:text="${comment.comment}" style="font-size: 15px; color:#343434;"></p>
+                            <div class="float-right" sec:authorize="isAuthenticated()">
+                                <button class="btn btn-sm btn-secondary" data-toggle="modal" th:data-target="'#editComment'+${comment.id}"  th:if="${currentUser.equals(comment.author)}" >
+                                    <span class="material-icons  d-block pt-1 pb-1" style="font-size: 16px;">border_color</span>
+                                </button>
+                                <button  class="btn btn-sm btn-danger" data-toggle="modal" th:data-target="'#deleteComment'+${comment.id}"  th:if="${currentUser.equals(comment.author)}">
+                                    <span class="material-icons  d-block pt-1 pb-1" style="font-size: 16px;">delete_forever</span>
+                                </button>
+                                <button  sec:authorize="hasAnyRole('ROLE_MODERATOR','ROLE_ADMIN')" class="btn btn-sm btn-danger" data-toggle="modal" th:data-target="'#deleteComment'+${comment.id}"  th:if="${!currentUser.equals(comment.author)}">
+                                    <span class="material-icons  d-block pt-1 pb-1" style="font-size: 16px;">delete_forever</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form sec:authorize="isAuthenticated()" th:action="@{'/editComment'}" th:method="post">
+                        <div class="modal fade" th:id="'editComment'+${comment.id}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editCommentLabel" th:text="#{label.editComment}"></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="comment_id" th:value="${comment.id}">
+                                        <textarea class="w-100" name="comment_text" th:value="${comment.comment}" th:text="${comment.comment}"></textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary" th:text="#{button.save}"></button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{button.close}"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <form sec:authorize="isAuthenticated()" th:action="@{'/deleteComment'}" th:method="post">
+                        <div class="modal fade" th:id="'deleteComment'+${comment.id}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteCommentLabel" th:text="#{label.deleteComment}"></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <input type="hidden" name="comment_id" th:value="${comment.id}">
+
+                                    <div class="modal-body" th:text="#{label.deleteModalBody}">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary" th:text="#{button.yes}"></button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{button.no}"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <form class="mt-4" sec:authorize="isAuthenticated()" th:action="@{'/addComment'}" method="post">
+                <input type="hidden" name="item_id" th:value="${item.id}">
+                <div class="form-group" >
+                    <textarea type="text" name="comment"class="form-control" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary float-right" th:text="#{button.addComment}"></button>
+            </form>
+</div>
+
+</html>

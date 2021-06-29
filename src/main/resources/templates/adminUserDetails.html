@@ -1,0 +1,104 @@
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorator="layout/adminPanelHeader.html">
+<div layout:fragment="admin_content" >
+    <div class="card" >
+        <div class="card-body">
+            <h5 class="card-title" th:text="'Full name: '+${user.fullName}"></h5>
+            <p class="h6"> Roles:
+                <h5 th:if="${user.roles!=null}" th:each="role: ${user.roles}">
+                    <span class="ml-5" th:text="${role.name}"></span>
+                </h5>
+            </p>
+        </div>
+    </div>
+    <button  type="button" data-toggle="modal" data-target="#editModal" class="btn btn-success btn-sm mt-3" th:text="#{button.edit}" th:if="${currentUser.id!=user.id}"  sec:authorize="hasRole('ROLE_ADMIN')"></button>
+    <button  type="button" data-toggle="modal" data-target="#deleteModal" class="btn btn-danger btn-sm mt-3"  th:text="#{button.delete}" th:if="${currentUser.id!=user.id}" sec:authorize="hasRole('ROLE_ADMIN')"></button>
+
+    <div class="mt-3" sec:authorize="hasRole('ROLE_ADMIN')">
+        <table class="table table-striped">
+            <h4 th:text="#{label.roles}"></h4>
+            <tbody>
+            <tr th:each="rl:${user.roles}">
+                <form th:action="@{'/deleteUserRole'}" method="post">
+                    <input type="hidden" name="user_id" th:value="${user.id}">
+                    <input type="hidden" name="role_id" th:if="${!rl.name.equals('ROLE_ADMIN')}"  th:value="${rl.id}">
+                    <td th:text="${rl.name}" th:if="${!rl.name.equals('ROLE_ADMIN')}"></td>
+                    <td width="5%" th:if="${!rl.name.equals('ROLE_ADMIN')}">
+                        <button class="btn btn-danger btn-sm" type="submit"><span class="material-icons pt-1" style="font-size: 18px;" >remove</span></button>
+                    </td>
+                </form>
+
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-3" sec:authorize="hasRole('ROLE_ADMIN')">
+
+        <table class="table table-striped">
+            <tbody>
+                <tr th:each="rll:${roles}">
+                    <form th:action="@{'/assignRoles'}" method="post">
+                        <input type="hidden" name="user_id" th:value="${user.id}">
+                        <input type="hidden" name="role_id" th:value="${rll.id} " th:if="${!rll.name.equals('ROLE_ADMIN')}">
+                        <td th:text="${rll.name}" th:if="${!rll.name.equals('ROLE_ADMIN')}"></td>
+                        <td width="5%" th:if="${!rll.name.equals('ROLE_ADMIN')}">
+                            <button class="btn btn-success btn-sm" type="submit"><span class="material-icons pt-1" style="font-size: 18px;">add</span></button>
+                        </td>
+                    </form>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <form th:action="@{'/editUser'}" method="post" >
+        <div class="modal" id="editModal" >
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel1" th:text="#{label.editUser}"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" class="form-control" name="id" th:value="${user.id}">
+                        <div class="form-group">
+                            <label class="col-form-label" th:text="#{label.name}+' :'"></label>
+                            <input type="text" class="form-control" name="name" th:value="${user.fullName}">
+                        </div>
+                        <div class="form-group">
+                            <label class="col-form-label" th:text="#{label.password}"></label>
+                            <input type="text" class="form-control" name="password"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success" th:text="#{button.save}"></button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{button.close}" ></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <form th:action="@{'/deleteUser'}" method="post">
+        <div class="modal" id="deleteModal" >
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel2" th:text="#{label.deleteUser}"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" class="form-control" name="id" th:value="${user.id}">
+                        <p th:text="#{label.deleteModalBody}"> </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success" th:text="#{button.yes}"></button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{button.no}"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</html>

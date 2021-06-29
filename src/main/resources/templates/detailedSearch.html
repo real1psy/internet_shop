@@ -1,0 +1,65 @@
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/header.html">
+<div layout:fragment="site_content" >
+        <form th:action="@{'/detSearch'}" method="get">
+            <div class="form-row">
+                <div class="form-group col m-1 "  >
+                    <label for="inputSearch" th:text="#{label.name}+': '"></label>
+                    <input  class="form-control" id="inputSearch" name="search" type="search" placeholder="Search" aria-label="Search" th:value="${searchRes}">
+                </div>
+                <div class="form-group col m-1">
+                    <label for="inputPriceFrom" th:text="#{label.brand}+': '"> </label>
+                    <select name="brand_id" class="form-control" >
+                        <p th:each="br: ${brands}"><option th:value="${br.id}" th:text="${br.name}" th:selected="${brandS!=null&&brandS.id==br.id}"></option></p>
+                    </select>
+
+                </div>
+                <div class="form-group col m-1">
+                    <label for="inputPriceFrom" th:text="#{label.priceFrom}+': '"> </label>
+                    <input type="number" class="form-control" id="inputPriceFrom" name="price_from" min="0" >
+                </div>
+                <div class="form-group col m-1">
+                    <label for="inputPriceTo" th:text="#{label.priceTo}+': '"></label>
+                    <input type="number" class="form-control" id="inputPriceTo" name="price_to" min="0">
+                </div>
+                <div class="form-group col m-2">
+                    <label></label>
+                    <button class="btn" style="width: 190px; background-color: seagreen; color: white;" type="submit" th:text="#{button.search}"></button>
+                </div>
+            </div>
+            <div class="btn-group btn-group-toggle mt-2" data-toggle="buttons" >
+                <label class="btn btn-secondary active">
+                    <input type="radio" name="options" id="option1"  value="asc" checked th:text="#{button.asc}">
+                </label>
+                <label class="btn btn-secondary">
+                    <input type="radio" name="options" id="option2" value="desc" th:text="#{button.desc}">
+                </label>
+            </div>
+        </form>
+        <div class=" row justify-content-md mt-4 ">
+            <div class="column-4   mb-4" th:each="it:${items}" style="margin: 17px;">
+                <div class="card" style="width: 250px; height: 450px; " >
+                    <img th:src="${it.smallPicUrl}" class="card-img-top" alt="..." style=" height: 150px;">
+                    <div class="card-body">
+
+
+                        <a th:href="@{'/itemDetails/'+${it.id}}" class="stretched-link"><h5 class="card-title" style="color:dodgerblue;"  th:text="${it.name}"></h5></a>
+                        <h6 class="card-text" th:text="${it.price}+' $'"> </h6>
+                        <p class="card-text" th:text="${it.description}"> </p>
+                        <p class="card-text" th:text="${it.brand!=null&&it.brand.country!=null?'BRAND:'+it.brand.name+','+it.brand.country.name : ''}"> </p>
+
+                    </div>
+                    <div class="card-footer" >
+                        <div th:each="i: ${#numbers.sequence(1, 5)}" style="float:left; color: #F6D765;">
+                            <span class="material-icons d-inline"  th:if="${i<=it.rating}">star</span>
+                            <span class="material-icons d-inline"  th:unless="${i<=it.rating}">star_border</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</html>

@@ -1,0 +1,70 @@
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/header.html">
+<div layout:fragment="site_content" >
+
+    <div class="row">
+        <div class="col-6 offset-3">
+            <form th:action="@{'/registration'}" method="post"onSubmit = "return checkPassword(this)" >
+                <div class="form-group">
+                    <label for="exampleInput" th:text="#{label.fullName}"> </label>
+                    <input type="text" name="full_name" class="form-control" id="exampleInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Email: </label>
+                    <input type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                    <small id="emailHelp" class="form-text text-muted" th:text="#{label.emailHelp}"></small>
+                </div>
+                <div class="form-group mb-2">
+                    <label th:text="#{label.password}"></label>
+                    <input type="password" name="password" class="form-control" id="passwordInput1" required>
+                    <div class="form-group float-right mt-2">
+                        <input class="mr-1" type="checkbox" onclick="myFunction1()" th:text="#{label.show}">
+                    </div>
+                </div>
+
+                <div class="form-group ">
+                    <label class="mt-2" th:text="#{label.rePassword}"> </label>
+                    <input type="password" name="re_password" class="form-control" id="passwordInput2" required>
+                    <div class="form-group float-right mt-2">
+                        <input class="mr-1" type="checkbox" onclick="myFunction()" th:text="#{label.show}">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3" th:text="#{button.signUp}"></button>
+            </form>
+            <script>
+                function myFunction() {
+                    var x = document.getElementById("passwordInput2");
+                    if (x.type === "password") {
+                        x.type = "text";
+                    } else {
+                        x.type = "password";
+                    }
+                }
+                function myFunction1() {
+                    var x = document.getElementById("passwordInput1");
+                    if (x.type === "password") {
+                        x.type = "text";
+                    } else {
+                        x.type = "password";
+                    }
+                }
+
+                function checkPassword(form) {
+                    password1 = form.password.value;
+                    password2 = form.re_password.value;
+
+                    if (password1 != password2) {
+                        alert("\nPassword did not match: Please try again...")
+                        return false;
+                    }
+                }
+            </script>
+
+        </div>
+    </div>
+
+
+</div>
+
+</html>

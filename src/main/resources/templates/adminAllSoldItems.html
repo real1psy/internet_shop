@@ -1,0 +1,25 @@
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorator="layout/adminPanelHeader.html">
+<div layout:fragment="admin_content" >
+    <table class="table ">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col" th:text="#{label.name}"></th>
+            <th scope="col" th:text="#{label.count}"></th>
+            <th scope="col" th:text="#{label.addedDate}"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="si:${soldItems}">
+            <th scope="row" th:text="${si.id}"></th>
+            <td th:text="${si.item.name}"></td>
+            <td th:text="${si.count}"></td>
+            <td th:text="${si.orderedDate}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+
+</div>
+</html>
